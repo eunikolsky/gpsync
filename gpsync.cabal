@@ -1,0 +1,108 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           gpsync
+version:        0.0.1
+description:    Please see the README on GitHub at <https://github.com/githubuser/gpsync#readme>
+homepage:       https://github.com/githubuser/gpsync#readme
+bug-reports:    https://github.com/githubuser/gpsync/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2024 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/gpsync
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_gpsync
+  hs-source-dirs:
+      src
+  default-extensions:
+      BangPatterns
+      BinaryLiterals
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      NumericUnderscores
+      OverloadedStrings
+      ScopedTypeVariables
+      TypeApplications
+  ghc-options: -Wall -Wcompat -Widentities -fhide-source-paths -Wnoncanonical-monad-instances -Werror=incomplete-record-updates -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wmissing-deriving-strategies -Wunused-packages -Werror=missing-fields -Werror=missing-methods -Wpartial-fields -Wredundant-constraints -Werror=empty-enumerations -Werror=missing-home-modules
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable gpsync
+  main-is: Main.hs
+  other-modules:
+      Paths_gpsync
+  hs-source-dirs:
+      program
+  default-extensions:
+      BangPatterns
+      BinaryLiterals
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      NumericUnderscores
+      OverloadedStrings
+      ScopedTypeVariables
+      TypeApplications
+  ghc-options: -Wall -Wcompat -Widentities -fhide-source-paths -Wnoncanonical-monad-instances -Werror=incomplete-record-updates -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wmissing-deriving-strategies -Wunused-packages -Werror=missing-fields -Werror=missing-methods -Wpartial-fields -Wredundant-constraints -Werror=empty-enumerations -Werror=missing-home-modules -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , gpsync
+  default-language: Haskell2010
+
+test-suite gpsync-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      LibSpec
+      Paths_gpsync
+  hs-source-dirs:
+      test
+  default-extensions:
+      BangPatterns
+      BinaryLiterals
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleInstances
+      GeneralizedNewtypeDeriving
+      ImportQualifiedPost
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      NumericUnderscores
+      OverloadedStrings
+      ScopedTypeVariables
+      TypeApplications
+  ghc-options: -Wall -Wcompat -Widentities -fhide-source-paths -Wnoncanonical-monad-instances -Werror=incomplete-record-updates -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wmissing-deriving-strategies -Wunused-packages -Werror=missing-fields -Werror=missing-methods -Wpartial-fields -Wredundant-constraints -Werror=empty-enumerations -Werror=missing-home-modules -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , gpsync
+    , hspec
+  default-language: Haskell2010

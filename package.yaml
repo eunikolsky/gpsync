@@ -1,0 +1,87 @@
+name:                gpsync
+version:             0.0.1
+github:              "githubuser/gpsync"
+license:             BSD3
+author:              "Author name here"
+maintainer:          "example@example.com"
+copyright:           "2024 Author name here"
+
+extra-source-files:
+- README.md
+- CHANGELOG.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/gpsync#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+ghc-options:
+- -Wall
+- -Wcompat
+- -Widentities
+- -fhide-source-paths
+- -Wnoncanonical-monad-instances
+- -Werror=incomplete-record-updates
+- -Werror=incomplete-patterns
+- -Werror=incomplete-uni-patterns
+- -Wmissing-export-lists
+- -Wmissing-home-modules
+- -Wmissing-deriving-strategies
+- -Wunused-packages
+- -Werror=missing-fields
+- -Werror=missing-methods
+- -Wpartial-fields
+- -Wredundant-constraints
+- -Werror=empty-enumerations
+- -Werror=missing-home-modules
+
+default-extensions:
+# most of the list is copied from summoner
+# https://github.com/kowainik/summoner/blob/main/summoner-cli/examples/stack-full/stack-full.cabal
+- BangPatterns
+- BinaryLiterals
+- DeriveGeneric
+- DerivingStrategies
+- FlexibleInstances
+- GeneralizedNewtypeDeriving
+- ImportQualifiedPost
+- MultiParamTypeClasses
+- MultiWayIf
+- NamedFieldPuns
+- NumericUnderscores
+- OverloadedStrings
+- ScopedTypeVariables
+- TypeApplications
+
+library:
+  source-dirs: src
+
+executables:
+  gpsync:
+    main:                Main.hs
+    source-dirs:         program
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - gpsync
+
+tests:
+  gpsync-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - gpsync
+    - hspec
