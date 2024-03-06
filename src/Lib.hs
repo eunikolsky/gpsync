@@ -1,4 +1,4 @@
-module Lib (add) where
+module Lib (getSyncPlan) where
 
-add :: Int -> Int -> Int
-add = (+)
+getSyncPlan :: [a] -> [a] -> [a]
+getSyncPlan _ _ = []

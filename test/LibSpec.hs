@@ -5,6 +5,6 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  describe "add" $
-    it "adds two numbers" $
-      2 `add` 2 `shouldBe` 4
+  describe "getSyncPlan" $
+    it "returns empty list for empty inputs" $
+      getSyncPlan [] [] `shouldBe` ([] :: [Int])
