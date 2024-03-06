@@ -1,6 +1,6 @@
-module LibSpec (spec) where
+module SyncPlanSpec (spec) where
 
-import Lib
+import SyncPlan
 import Test.Hspec
 
 spec :: Spec
