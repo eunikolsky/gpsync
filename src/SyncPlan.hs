@@ -1,4 +1,4 @@
 module SyncPlan (getSyncPlan) where
 
-getSyncPlan :: [a] -> [a] -> [a]
-getSyncPlan _ _ = []
+getSyncPlan :: [a] -> [FilePath] -> [FilePath]
+getSyncPlan _ = id
