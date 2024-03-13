@@ -25,5 +25,12 @@ spec = do
           toCopy = Copy <$> new
       in getSyncPlan new existing `shouldBe` toCopy
 
+    it "copies new episodes that are not existing yet" $
+      let existing = ["1/b.mp3"]
+          newNew = ["1/a.mp3", "podcast/episode.mp3"]
+          new = newNew <> existing
+          toCopy = Copy <$> newNew
+      in getSyncPlan new existing `shouldBe` toCopy
+
     it "returns empty list for empty inputs" $
       getSyncPlan [] [] `shouldBe` []

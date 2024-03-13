@@ -6,5 +6,7 @@ data SyncAction = Delete FilePath | Copy FilePath
   deriving stock (Show, Eq)
 
 getSyncPlan :: [FilePath] -> [FilePath] -> [SyncAction]
-getSyncPlan newEpisodes [] = Copy <$> newEpisodes
-getSyncPlan newEpisodes existingEpisodes = Delete <$> existingEpisodes \\ newEpisodes
+getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
+  where
+    toCopy = Copy <$> newEpisodes \\ existingEpisodes
+    toDelete = Delete <$> existingEpisodes \\ newEpisodes
