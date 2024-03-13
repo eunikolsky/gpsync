@@ -3,7 +3,7 @@ module SyncPlan (SyncAction (..), getSyncPlan) where
 import Data.Set (Set)
 import Data.Set qualified as S
 
-data SyncAction = Delete FilePath | Copy FilePath
+data SyncAction = Delete !FilePath | Copy !FilePath
   deriving stock (Show, Eq, Ord)
 
 getSyncPlan :: [FilePath] -> [FilePath] -> Set SyncAction
