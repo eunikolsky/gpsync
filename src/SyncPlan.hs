@@ -1,6 +1,9 @@
-module SyncPlan (getSyncPlan) where
+module SyncPlan (SyncAction (..), getSyncPlan) where
 
-getSyncPlan :: [FilePath] -> [FilePath] -> [FilePath]
-getSyncPlan newEpisodes [] = newEpisodes
-getSyncPlan [] existingEpisodes = existingEpisodes
+data SyncAction = Delete FilePath | Copy FilePath
+  deriving stock (Show, Eq)
+
+getSyncPlan :: [FilePath] -> [FilePath] -> [SyncAction]
+getSyncPlan newEpisodes [] = Copy <$> newEpisodes
+getSyncPlan [] existingEpisodes = Delete <$> existingEpisodes
 getSyncPlan _ _ = []
