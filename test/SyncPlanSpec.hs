@@ -33,5 +33,10 @@ spec = do
           toCopy = S.fromList $ Copy <$> newNew
       in getSyncPlan new existing `shouldBe` toCopy
 
+    it "returns no actions for new episodes that are all existing already" $
+      let existing = ["1/a.mp3", "podcast/episode.mp3", "1/b.mp3"]
+          new = existing
+      in getSyncPlan new existing `shouldBe` mempty
+
     it "returns no actions for empty inputs" $
       getSyncPlan [] [] `shouldBe` mempty
