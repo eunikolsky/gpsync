@@ -62,6 +62,8 @@ default-extensions:
 
 library:
   source-dirs: src
+  dependencies:
+    - containers
 
 executables:
   gpsync:
@@ -83,5 +85,6 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - containers
     - gpsync
     - hspec
