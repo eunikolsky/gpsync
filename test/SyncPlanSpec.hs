@@ -38,5 +38,11 @@ spec = do
           new = existing
       in getSyncPlan new existing `shouldBe` mempty
 
+    it "ignores unknown existing episodes" $ do
+      pendingWith "TODO define this use case"
+      let new = ["1/a.mp3", "podcast/episode.mp3", "1/b.mp3"]
+          existing = new <> ["1/foo.mp3", "unknown/episode.mp3"]
+      getSyncPlan new existing `shouldBe` mempty
+
     it "returns no actions for empty inputs" $
       getSyncPlan [] [] `shouldBe` mempty
