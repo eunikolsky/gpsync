@@ -12,5 +12,11 @@ spec = do
           toDelete = synced
       in getSyncPlan new synced `shouldBe` toDelete
 
+    it "copies all new episodes" $
+      let synced = []
+          new = ["1/a.mp3", "podcast/episode.mp3", "1/b.mp3"]
+          toCopy = new
+      in getSyncPlan new synced `shouldBe` toCopy
+
     it "returns empty list for empty inputs" $
       getSyncPlan [] [] `shouldBe` []
