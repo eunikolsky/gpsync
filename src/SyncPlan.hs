@@ -8,7 +8,7 @@ import System.FilePath
 
 type TargetFilePath = FilePath
 
-data SyncAction = Delete !FilePath | Copy !TargetFilePath
+data SyncAction = Delete !TargetFilePath | Copy !TargetFilePath
   deriving stock (Show, Eq, Ord)
 
 getSyncPlan :: [FilePath] -> [TargetFilePath] -> Set SyncAction
