@@ -1,5 +1,6 @@
-module SyncPlan (Episode (..), SyncAction (..), getSyncPlan, targetFilePath) where
+module SyncPlan (Episode (..), ExistingEpisode (..), SyncAction (..), getSyncPlan, targetFilePath) where
 
+import Data.Map qualified as M
 import Data.Set (Set)
 import Data.Set qualified as S
 import Data.Text (Text)
@@ -8,17 +9,23 @@ import System.FilePath
 
 type TargetFilePath = FilePath
 
-data SyncAction = Delete !TargetFilePath | Copy !TargetFilePath
+data ExistingEpisode = ExistingEpisode
+  { eeId :: !EpisodeId
+  , eeFilename :: !TargetFilePath
+  }
   deriving stock (Show, Eq, Ord)
 
-getSyncPlan :: [FilePath] -> [TargetFilePath] -> Set SyncAction
+data SyncAction = Delete !ExistingEpisode | Copy !Episode
+  deriving stock (Show, Eq, Ord)
+
+getSyncPlan :: [Episode] -> [ExistingEpisode] -> Set SyncAction
 getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
   where
-    toCopy = S.map Copy $ newS S.\\ existingS
-    toDelete = S.map Delete $ existingS S.\\ newS
+    toCopy = S.fromList . fmap Copy . M.elems $ newM M.\\ existingM
+    toDelete = S.fromList . fmap Delete . M.elems $ existingM M.\\ newM
 
-    newS = S.fromList newEpisodes
-    existingS = S.fromList existingEpisodes
+    newM = M.fromList $ (\e -> (epId e, e)) <$> newEpisodes
+    existingM = M.fromList $ (\e -> (eeId e, e)) <$> existingEpisodes
 
 type EpisodeId = Int
 
