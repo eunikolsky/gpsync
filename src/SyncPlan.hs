@@ -20,11 +20,15 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
     newS = S.fromList newEpisodes
     existingS = S.fromList existingEpisodes
 
+type EpisodeId = Int
+
 data Episode = Episode
-  { epPodcastTitle :: !Text
+  { epId :: !EpisodeId
+  , epPodcastTitle :: !Text
   , epEpisodeTitle :: !Text
   , epFilename :: !FilePath
   }
+  deriving stock (Show, Eq, Ord)
 
 targetFilePath :: Episode -> TargetFilePath
 targetFilePath Episode{epPodcastTitle, epEpisodeTitle} =
