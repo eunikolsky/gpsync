@@ -1,7 +1,10 @@
-module SyncPlan (SyncAction (..), getSyncPlan) where
+module SyncPlan (Episode (..), SyncAction (..), getSyncPlan, targetFilePath) where
 
 import Data.Set (Set)
 import Data.Set qualified as S
+import Data.Text (Text)
+import Data.Text qualified as T
+import System.FilePath
 
 type TargetFilePath = FilePath
 
@@ -16,3 +19,13 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
 
     newS = S.fromList newEpisodes
     existingS = S.fromList existingEpisodes
+
+data Episode = Episode
+  { epPodcastTitle :: !Text
+  , epEpisodeTitle :: !Text
+  , epFilename :: !FilePath
+  }
+
+targetFilePath :: Episode -> TargetFilePath
+targetFilePath Episode{epPodcastTitle, epEpisodeTitle} =
+  T.unpack epPodcastTitle </> T.unpack epEpisodeTitle <.> "mp3"

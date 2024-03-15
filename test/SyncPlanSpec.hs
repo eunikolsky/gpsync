@@ -46,3 +46,8 @@ spec = do
 
     it "returns no actions for empty inputs" $
       getSyncPlan [] [] `shouldBe` mempty
+
+  describe "targetFilePath" $ do
+    it "consists of podcast and episode titles" $
+      let episode = Episode "foo" "bar" "foo/123.mp3"
+      in targetFilePath episode `shouldBe` "foo/bar.mp3"
