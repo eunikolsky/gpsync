@@ -64,6 +64,8 @@ library:
   source-dirs: src
   dependencies:
     - containers
+    - filepath
+    - text
 
 executables:
   gpsync:

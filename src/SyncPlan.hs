@@ -1,7 +1,10 @@
-module SyncPlan (SyncAction (..), getSyncPlan) where
+module SyncPlan (Episode (..), SyncAction (..), getSyncPlan, targetFilePath) where
 
 import Data.Set (Set)
 import Data.Set qualified as S
+import Data.Text (Text)
+import Data.Text qualified as T
+import System.FilePath
 
 type TargetFilePath = FilePath
 
@@ -16,3 +19,18 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
 
     newS = S.fromList newEpisodes
     existingS = S.fromList existingEpisodes
+
+data Episode = Episode
+  { epPodcastTitle :: !Text
+  , epEpisodeTitle :: !Text
+  , epFilename :: !FilePath
+  }
+
+targetFilePath :: Episode -> TargetFilePath
+targetFilePath Episode{epPodcastTitle, epEpisodeTitle} =
+  process epPodcastTitle </> process epEpisodeTitle <.> "mp3"
+  where
+    process = T.unpack . sanitize
+    -- TODO may need to sanitize other characters too
+    -- https://github.com/gpodder/gpodder/blob/master/src/gpodder/util.py#L1658
+    sanitize = T.replace "/" "_"
