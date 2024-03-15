@@ -55,3 +55,7 @@ spec = do
     it "sanitizes slash in titles" $
       let episode = Episode "my favorite /" "/root/" "foo/123.mp3"
       in targetFilePath episode `shouldBe` "my favorite _/_root_.mp3"
+
+    it "keeps the trailing period" $
+      let episode = Episode "podcast." "episode." "foo/123.mp3"
+      in targetFilePath episode `shouldBe` "podcast./episode..mp3"
