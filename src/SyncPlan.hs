@@ -28,4 +28,9 @@ data Episode = Episode
 
 targetFilePath :: Episode -> TargetFilePath
 targetFilePath Episode{epPodcastTitle, epEpisodeTitle} =
-  T.unpack epPodcastTitle </> T.unpack epEpisodeTitle <.> "mp3"
+  process epPodcastTitle </> process epEpisodeTitle <.> "mp3"
+  where
+    process = T.unpack . sanitize
+    -- TODO may need to sanitize other characters too
+    -- https://github.com/gpodder/gpodder/blob/master/src/gpodder/util.py#L1658
+    sanitize = T.replace "/" "_"
