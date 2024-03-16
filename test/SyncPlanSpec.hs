@@ -47,6 +47,12 @@ spec = do
           toCopy = S.fromList $ Copy <$> [ep2, ep1]
       in getSyncPlan new existing `shouldBe` toCopy
 
+    it "doesn't duplicate existing episode with a different name" $
+      let ee1Name = ee1{eeFilename = "different/name.mp3"}
+          existing = [ee5, ee2, ee1Name]
+          new = [ep1, ep2, ep5]
+      in getSyncPlan new existing `shouldBe` mempty
+
     it "returns no actions for new episodes that are all existing already" $
       let existing = [ee1, ee2, ee5]
           new = [ep5, ep1, ep2]
