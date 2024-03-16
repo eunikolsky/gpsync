@@ -28,6 +28,13 @@ spec = do
           toDelete = S.fromList $ Delete <$> [ee1, ee2]
       in getSyncPlan new existing `shouldBe` toDelete
 
+    it "removes episode with a different name" $
+      let new = [ep5, ep2]
+          ee1Name = ee1{eeFilename = "something/different.mp3"}
+          existing = [ee1Name, ee2, ee5]
+          toDelete = S.fromList $ Delete <$> [ee1Name]
+      in getSyncPlan new existing `shouldBe` toDelete
+
     it "copies all new episodes" $
       let existing = []
           new = [ep2, ep1, ep5]
