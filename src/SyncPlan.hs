@@ -1,13 +1,9 @@
-module SyncPlan (Episode (..), ExistingEpisode (..), SyncAction (..), getSyncPlan, targetFilePath) where
+module SyncPlan (ExistingEpisode (..), SyncAction (..), getSyncPlan) where
 
 import Data.Map qualified as M
 import Data.Set (Set)
 import Data.Set qualified as S
-import Data.Text (Text)
-import Data.Text qualified as T
-import System.FilePath
-
-type TargetFilePath = FilePath
+import Episode
 
 data ExistingEpisode = ExistingEpisode
   { eeId :: !EpisodeId
@@ -26,22 +22,3 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
 
     newM = M.fromList $ (\e -> (epId e, e)) <$> newEpisodes
     existingM = M.fromList $ (\e -> (eeId e, e)) <$> existingEpisodes
-
-type EpisodeId = Int
-
-data Episode = Episode
-  { epId :: !EpisodeId
-  , epPodcastTitle :: !Text
-  , epEpisodeTitle :: !Text
-  , epFilename :: !FilePath
-  }
-  deriving stock (Show, Eq, Ord)
-
-targetFilePath :: Episode -> TargetFilePath
-targetFilePath Episode{epPodcastTitle, epEpisodeTitle} =
-  process epPodcastTitle </> process epEpisodeTitle <.> "mp3"
-  where
-    process = T.unpack . sanitize
-    -- TODO may need to sanitize other characters too
-    -- https://github.com/gpodder/gpodder/blob/master/src/gpodder/util.py#L1658
-    sanitize = T.replace "/" "_"

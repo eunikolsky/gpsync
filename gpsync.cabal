@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Episode
       SyncPlan
   other-modules:
       Paths_gpsync
@@ -84,6 +85,7 @@ test-suite gpsync-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      EpisodeSpec
       SyncPlanSpec
       Paths_gpsync
   hs-source-dirs:
