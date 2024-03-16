@@ -8,15 +8,30 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  let ep1 = Episode{epId = 1, epPodcastTitle = "1", epEpisodeTitle = "a", epFilename = "1/a.mp3"}
+  let ep1 =
+        Episode
+          { epId = 1
+          , epPodcastTitle = "1"
+          , epEpisodeTitle = "a"
+          , epFilename = "1/a.mp3"
+          , epPublishedAt = read "2023-10-09 19:23:56"
+          }
       ep2 =
         Episode
           { epId = 2
           , epPodcastTitle = "podcast"
           , epEpisodeTitle = "episode"
           , epFilename = "podcast/episode.mp3"
+          , epPublishedAt = read "2024-02-03 04:00:01"
           }
-      ep5 = Episode{epId = 5, epPodcastTitle = "1", epEpisodeTitle = "b", epFilename = "1/b.mp3"}
+      ep5 =
+        Episode
+          { epId = 5
+          , epPodcastTitle = "1"
+          , epEpisodeTitle = "b"
+          , epFilename = "1/b.mp3"
+          , epPublishedAt = read "2022-08-08 14:35:00"
+          }
 
       ee1 = ExistingEpisode "1/a.mp3" 1
       ee2 = ExistingEpisode "podcast/episode.mp3" 2
@@ -93,10 +108,35 @@ spec = do
       in sort (Delete <$> episodes) `shouldBe` (Delete <$> expected)
 
     it "orders `Copy`s by podcast title first" $
-      let episodes =
-            [ Episode{epId = 1, epPodcastTitle = "zero", epEpisodeTitle = "", epFilename = ""}
-            , Episode{epId = 5, epPodcastTitle = "abc", epEpisodeTitle = "", epFilename = ""}
-            , Episode{epId = 9, epPodcastTitle = "foo", epEpisodeTitle = "", epFilename = ""}
+      let mkEpisode epId epPodcastTitle =
+            Episode
+              { epId
+              , epPodcastTitle
+              , epEpisodeTitle = ""
+              , epFilename = ""
+              , epPublishedAt = read "2024-01-01 00:00:00"
+              }
+          episodes =
+            [ mkEpisode 1 "zero"
+            , mkEpisode 5 "abc"
+            , mkEpisode 9 "foo"
             ]
           expected = sortOn epPodcastTitle episodes
+      in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)
+
+    it "orders `Copy`s by publication time second" $
+      let mkEpisode epId epPublishedAt =
+            Episode
+              { epId
+              , epPublishedAt
+              , epPodcastTitle = "abc"
+              , epEpisodeTitle = ""
+              , epFilename = ""
+              }
+          episodes =
+            [ mkEpisode 1 $ read "2024-12-31 20:00:00"
+            , mkEpisode 5 $ read "2024-01-31 10:00:00"
+            , mkEpisode 9 $ read "2024-01-31 22:40:00"
+            ]
+          expected = sortOn epPublishedAt episodes
       in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)

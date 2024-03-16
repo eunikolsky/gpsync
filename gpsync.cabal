@@ -52,6 +52,7 @@ library
     , containers
     , filepath
     , text
+    , time
   default-language: Haskell2010
 
 executable gpsync

@@ -66,6 +66,7 @@ library:
     - containers
     - filepath
     - text
+    - time
 
 executables:
   gpsync:

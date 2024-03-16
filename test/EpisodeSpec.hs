@@ -26,4 +26,5 @@ mkEpisode epPodcastTitle epEpisodeTitle =
     , epEpisodeTitle
     , epId = 1
     , epFilename = "foo/123.mp3"
+    , epPublishedAt = read "2024-01-01 00:00:00"
     }

@@ -2,12 +2,15 @@ module Episode (Episode (..), EpisodeId, TargetFilePath, targetFilePath) where
 
 import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Time
 import System.FilePath
 
 type EpisodeId = Int
 
 data Episode = Episode
+  -- it's important to sort by these two fields first
   { epPodcastTitle :: !Text
+  , epPublishedAt :: !LocalTime
   , epId :: !EpisodeId
   , epEpisodeTitle :: !Text
   , epFilename :: !FilePath
