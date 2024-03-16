@@ -6,8 +6,10 @@ import Data.Set qualified as S
 import Episode
 
 data ExistingEpisode = ExistingEpisode
-  { eeId :: !EpisodeId
-  , eeFilename :: !TargetFilePath
+  { eeFilename :: !TargetFilePath
+  , -- it would make sense to put the id first, but this way the compiler does the
+    -- work by ordering the filename before the id
+    eeId :: !EpisodeId
   }
   deriving stock (Show, Eq, Ord)
 
