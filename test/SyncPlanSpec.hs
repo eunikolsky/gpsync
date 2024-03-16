@@ -8,9 +8,15 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
-  let ep1 = Episode 1 "1" "a" "1/a.mp3"
-      ep2 = Episode 2 "podcast" "episode" "podcast/episode.mp3"
-      ep5 = Episode 5 "1" "b" "1/b.mp3"
+  let ep1 = Episode{epId = 1, epPodcastTitle = "1", epEpisodeTitle = "a", epFilename = "1/a.mp3"}
+      ep2 =
+        Episode
+          { epId = 2
+          , epPodcastTitle = "podcast"
+          , epEpisodeTitle = "episode"
+          , epFilename = "podcast/episode.mp3"
+          }
+      ep5 = Episode{epId = 5, epPodcastTitle = "1", epEpisodeTitle = "b", epFilename = "1/b.mp3"}
 
       ee1 = ExistingEpisode "1/a.mp3" 1
       ee2 = ExistingEpisode "podcast/episode.mp3" 2
@@ -85,3 +91,12 @@ spec = do
             ]
           expected = sortOn eeFilename episodes
       in sort (Delete <$> episodes) `shouldBe` (Delete <$> expected)
+
+    it "orders `Copy`s by podcast title first" $
+      let episodes =
+            [ Episode{epId = 1, epPodcastTitle = "zero", epEpisodeTitle = "", epFilename = ""}
+            , Episode{epId = 5, epPodcastTitle = "abc", epEpisodeTitle = "", epFilename = ""}
+            , Episode{epId = 9, epPodcastTitle = "foo", epEpisodeTitle = "", epFilename = ""}
+            ]
+          expected = sortOn epPodcastTitle episodes
+      in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)

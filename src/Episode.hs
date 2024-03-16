@@ -7,8 +7,8 @@ import System.FilePath
 type EpisodeId = Int
 
 data Episode = Episode
-  { epId :: !EpisodeId
-  , epPodcastTitle :: !Text
+  { epPodcastTitle :: !Text
+  , epId :: !EpisodeId
   , epEpisodeTitle :: !Text
   , epFilename :: !FilePath
   }

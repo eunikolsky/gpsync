@@ -90,3 +90,4 @@ tests:
     - containers
     - gpsync
     - hspec
+    - text
