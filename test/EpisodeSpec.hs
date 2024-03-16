@@ -1,6 +1,5 @@
 module EpisodeSpec (spec) where
 
-import Data.Set qualified as S
 import Episode
 import Test.Hspec
 
