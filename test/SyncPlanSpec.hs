@@ -1,5 +1,6 @@
 module SyncPlanSpec (spec) where
 
+import Data.List (sort)
 import Data.Set qualified as S
 import Episode
 import SyncPlan
@@ -7,15 +8,15 @@ import Test.Hspec
 
 spec :: Spec
 spec = do
+  let ep1 = Episode 1 "1" "a" "1/a.mp3"
+      ep2 = Episode 2 "podcast" "episode" "podcast/episode.mp3"
+      ep5 = Episode 5 "1" "b" "1/b.mp3"
+
+      ee1 = ExistingEpisode 1 "1/a.mp3"
+      ee2 = ExistingEpisode 2 "podcast/episode.mp3"
+      ee5 = ExistingEpisode 5 "1/b.mp3"
+
   describe "getSyncPlan" $ do
-    let ep1 = Episode 1 "1" "a" "1/a.mp3"
-        ep2 = Episode 2 "podcast" "episode" "podcast/episode.mp3"
-        ep5 = Episode 5 "1" "b" "1/b.mp3"
-
-        ee1 = ExistingEpisode 1 "1/a.mp3"
-        ee2 = ExistingEpisode 2 "podcast/episode.mp3"
-        ee5 = ExistingEpisode 5 "1/b.mp3"
-
     it "removes all existing episodes" $
       let existing = [ee1, ee2, ee5]
           new = []
@@ -66,3 +67,11 @@ spec = do
 
     it "returns no actions for empty inputs" $
       getSyncPlan [] [] `shouldBe` mempty
+
+  describe "Ord SyncAction" $
+    it "orders Delete before Copy" $
+      let deletes = Delete <$> [ee5, ee1]
+          copies = Copy <$> [ep5, ep1]
+          isDelete (Delete _) = True
+          isDelete _ = False
+      in (fmap isDelete . sort) (copies <> deletes) `shouldBe` [True, True, False, False]
