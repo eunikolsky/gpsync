@@ -63,6 +63,7 @@ default-extensions:
 library:
   source-dirs: src
   dependencies:
+    - aeson
     - containers
     - filepath
     - text
@@ -88,7 +89,9 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - aeson
     - containers
     - gpsync
     - hspec
+    - raw-strings-qq
     - text

@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Episode
+      GPodderConfig
       SyncPlan
   other-modules:
       Paths_gpsync
@@ -48,7 +49,8 @@ library
       TypeApplications
   ghc-options: -Wall -Wcompat -Widentities -fhide-source-paths -Wnoncanonical-monad-instances -Werror=incomplete-record-updates -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wmissing-deriving-strategies -Wunused-packages -Werror=missing-fields -Werror=missing-methods -Wpartial-fields -Wredundant-constraints -Werror=empty-enumerations -Werror=missing-home-modules
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , containers
     , filepath
     , text
@@ -87,6 +89,7 @@ test-suite gpsync-test
   main-is: Spec.hs
   other-modules:
       EpisodeSpec
+      GPodderConfigSpec
       SyncPlanSpec
       Paths_gpsync
   hs-source-dirs:
@@ -108,9 +111,11 @@ test-suite gpsync-test
       TypeApplications
   ghc-options: -Wall -Wcompat -Widentities -fhide-source-paths -Wnoncanonical-monad-instances -Werror=incomplete-record-updates -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wmissing-deriving-strategies -Wunused-packages -Werror=missing-fields -Werror=missing-methods -Wpartial-fields -Wredundant-constraints -Werror=empty-enumerations -Werror=missing-home-modules -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      aeson
+    , base >=4.7 && <5
     , containers
     , gpsync
     , hspec
+    , raw-strings-qq
     , text
   default-language: Haskell2010
