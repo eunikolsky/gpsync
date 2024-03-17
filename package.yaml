@@ -62,6 +62,11 @@ default-extensions:
 
 library:
   source-dirs: src
+  dependencies:
+    - containers
+    - filepath
+    - text
+    - time
 
 executables:
   gpsync:
@@ -83,5 +88,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - containers
     - gpsync
     - hspec
+    - text
