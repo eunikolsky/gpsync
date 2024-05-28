@@ -7,6 +7,9 @@ import System.FilePath
 
 type EpisodeId = Int
 
+{- | Regular episodes that are managed by gPodder. They are read from the
+`episode + podcast` tables.
+-}
 data Episode = Episode
   -- it's important to sort by these two fields first
   { epPodcastTitle :: !Text

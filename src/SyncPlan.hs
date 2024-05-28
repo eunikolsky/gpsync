@@ -5,6 +5,11 @@ import Data.Set (Set)
 import Data.Set qualified as S
 import Episode
 
+{- | Episodes that were previously synced. They are read from/written to the new
+`synced_episode` table created by this program. The program assumes that this
+table reflects the filesystem view on the player device, that is that only it
+makes modifications to the sync directory on the device.
+-}
 data ExistingEpisode = ExistingEpisode
   { eeFilename :: !TargetFilePath
   , -- it would make sense to put the id first, but this way the compiler does the
