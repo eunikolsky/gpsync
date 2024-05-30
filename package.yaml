@@ -65,6 +65,7 @@ library:
   dependencies:
     - aeson
     - containers
+    - directory
     - filepath
     - text
     - time

@@ -17,6 +17,7 @@ data Episode = Episode
   , epId :: !EpisodeId
   , epEpisodeTitle :: !Text
   , epFilename :: !FilePath
+  -- ^ path to file relative to gPodder's downloads dir
   }
   deriving stock (Show, Eq, Ord)
 

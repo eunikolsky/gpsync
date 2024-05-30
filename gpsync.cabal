@@ -25,9 +25,11 @@ source-repository head
 
 library
   exposed-modules:
+      Config
       Episode
       GPodderConfig
       SyncPlan
+      SyncPlanExec
   other-modules:
       Paths_gpsync
   hs-source-dirs:
@@ -52,6 +54,7 @@ library
       aeson
     , base >=4.7 && <5
     , containers
+    , directory
     , filepath
     , text
     , time
