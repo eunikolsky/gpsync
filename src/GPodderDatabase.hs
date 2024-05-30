@@ -18,7 +18,7 @@ type DB a = ReaderT Connection IO a
 `Database.SQLite.Simple`.
 -}
 withDatabase :: FilePath -> DB a -> IO a
-withDatabase file f = withConnection file $ runReaderT f
+withDatabase file f = withConnection file . runReaderT $ createSyncedEpisodeTable >> f
 
 {- | Returns all not-listened-to, downloaded episodes from the gPodder database.
 Only @.mp3@ files are returned. The filenames are relative to gPodder's download
@@ -41,4 +41,18 @@ getNewEpisodes = do
       WHERE e.state = 1
         AND e.is_new
         AND e.download_filename LIKE '%.mp3'
+    |]
+
+createSyncedEpisodeTable :: DB ()
+createSyncedEpisodeTable = do
+  conn <- ask
+  liftIO $
+    execute_
+      conn
+      [r|
+      CREATE TABLE IF NOT EXISTS synced_episode (
+        episodeId INTEGER PRIMARY KEY NOT NULL,
+        filename TEXT NOT NULL UNIQUE,
+        addedAt INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+      )
     |]
