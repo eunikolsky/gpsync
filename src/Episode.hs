@@ -3,6 +3,7 @@ module Episode (Episode (..), EpisodeId, TargetFilePath, targetFilePath) where
 import Data.Text (Text)
 import Data.Text qualified as T
 import Data.Time
+import GHC.Generics
 import System.FilePath
 
 type EpisodeId = Int
@@ -19,7 +20,7 @@ data Episode = Episode
   , epFilename :: !FilePath
   -- ^ path to file relative to gPodder's downloads dir
   }
-  deriving stock (Show, Eq, Ord)
+  deriving stock (Show, Eq, Ord, Generic)
 
 type TargetFilePath = FilePath
 
