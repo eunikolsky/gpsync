@@ -20,13 +20,14 @@ execAction Config{cfgSyncTargetDir} (Delete e) = do
   removeFile file
   pure $ Deleted e
 execAction Config{cfgSyncTargetDir, cfgDownloadsDir} (Copy e) = do
-  let target = targetFilePath e
+  let targetFilename = targetFilePath e
+      target = cfgSyncTargetDir </> targetFilename
   ensureDir $ takeDirectory target
   let from = cfgDownloadsDir </> epFilename e
-      to = cfgSyncTargetDir </> target
+      to = target
   putStrLn $ mconcat ["copying ", from, " → ", to]
   copyFile from to
-  pure $ Copied ExistingEpisode{eeId = epId e, eeFilename = target}
+  pure $ Copied ExistingEpisode{eeId = epId e, eeFilename = targetFilename}
 
 ensureDir :: FilePath -> IO ()
 ensureDir = createDirectoryIfMissing createParents
