@@ -8,14 +8,17 @@ import SyncPlan
 import System.Directory
 import System.FilePath
 
-executeSyncPlan :: Config -> Set SyncAction -> IO ()
-executeSyncPlan config = mapM_ (execAction config) . S.toAscList
+data SyncResult = Deleted ExistingEpisode | Copied ExistingEpisode
 
-execAction :: Config -> SyncAction -> IO ()
+executeSyncPlan :: Config -> Set SyncAction -> IO [SyncResult]
+executeSyncPlan config = mapM (execAction config) . S.toAscList
+
+execAction :: Config -> SyncAction -> IO SyncResult
 execAction Config{cfgSyncTargetDir} (Delete e) = do
   let file = cfgSyncTargetDir </> eeFilename e
   putStrLn $ "removing " <> file
   removeFile file
+  pure $ Deleted e
 execAction Config{cfgSyncTargetDir, cfgDownloadsDir} (Copy e) = do
   let target = targetFilePath e
   ensureDir $ takeDirectory target
@@ -23,6 +26,7 @@ execAction Config{cfgSyncTargetDir, cfgDownloadsDir} (Copy e) = do
       to = cfgSyncTargetDir </> target
   putStrLn $ mconcat ["copying ", from, " → ", to]
   copyFile from to
+  pure $ Copied ExistingEpisode{eeId = epId e, eeFilename = target}
 
 ensureDir :: FilePath -> IO ()
 ensureDir = createDirectoryIfMissing createParents
