@@ -15,6 +15,7 @@ import GPodderDatabase
 import SyncPlan (getSyncPlan)
 import SyncPlanExec (SyncResult (..), executeSyncPlan)
 import System.Directory (getHomeDirectory)
+import System.Environment (lookupEnv)
 import System.Exit (die)
 import System.FilePath ((</>))
 
@@ -23,8 +24,10 @@ main = getConfig >>= sync
 
 getConfig :: IO Config
 getConfig = do
-  home <- getHomeDirectory
-  let cfgGPodderDir = home </> "gPodder"
+  let getDefaultGPodderDir = do
+        home <- getHomeDirectory
+        pure $ home </> "gPodder"
+  cfgGPodderDir <- lookupEnv "GPODDER_HOME" >>= maybe getDefaultGPodderDir pure
   eitherGPConfig <- eitherDecodeFileStrict @GPodderConfig $ cfgGPodderDir </> "Settings.json"
   GPodderConfig{gcSyncTargetDir} <- either (die . ("can't parse settings: " <>)) pure eitherGPConfig
   pure
