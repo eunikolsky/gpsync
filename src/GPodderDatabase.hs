@@ -4,6 +4,7 @@ module GPodderDatabase
   ( addSyncedEpisode
   , getNewEpisodes
   , getSyncedEpisodes
+  , removeSyncedEpisode
   , withDatabase
   ) where
 
@@ -54,6 +55,15 @@ addSyncedEpisode ExistingEpisode{eeId, eeFilename} = do
       conn
       "INSERT INTO synced_episode (episodeId, filename) VALUES (:id, :filename)"
       ["id" := eeId, "filename" := eeFilename]
+
+removeSyncedEpisode :: ExistingEpisode -> DB ()
+removeSyncedEpisode ExistingEpisode{eeId} = do
+  conn <- ask
+  liftIO $
+    executeNamed
+      conn
+      "DELETE FROM synced_episode WHERE episodeId = :id"
+      ["id" := eeId]
 
 getSyncedEpisodes :: DB [ExistingEpisode]
 getSyncedEpisodes = do
