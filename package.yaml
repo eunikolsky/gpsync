@@ -82,6 +82,9 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - aeson
+    - directory
+    - filepath
     - gpsync
 
 tests:

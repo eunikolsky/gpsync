@@ -1,4 +1,4 @@
-module SyncPlanExec (executeSyncPlan) where
+module SyncPlanExec (SyncResult (..), executeSyncPlan) where
 
 import Config
 import Data.Set (Set)

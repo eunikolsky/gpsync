@@ -1,7 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module GPodderDatabase
-  ( addSyncedEpisode
+  ( DB
+  , addSyncedEpisode
   , getNewEpisodes
   , getSyncedEpisodes
   , removeSyncedEpisode
