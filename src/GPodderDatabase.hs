@@ -3,6 +3,7 @@
 module GPodderDatabase
   ( addSyncedEpisode
   , getNewEpisodes
+  , getSyncedEpisodes
   , withDatabase
   ) where
 
@@ -53,6 +54,11 @@ addSyncedEpisode ExistingEpisode{eeId, eeFilename} = do
       conn
       "INSERT INTO synced_episode (episodeId, filename) VALUES (:id, :filename)"
       ["id" := eeId, "filename" := eeFilename]
+
+getSyncedEpisodes :: DB [ExistingEpisode]
+getSyncedEpisodes = do
+  conn <- ask
+  liftIO $ query_ conn "SELECT filename, episodeId FROM synced_episode"
 
 createSyncedEpisodeTable :: DB ()
 createSyncedEpisodeTable = do
