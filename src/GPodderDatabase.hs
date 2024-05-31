@@ -1,7 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module GPodderDatabase
-  ( getNewEpisodes
+  ( addSyncedEpisode
+  , getNewEpisodes
   , withDatabase
   ) where
 
@@ -9,6 +10,7 @@ import Control.Monad.Reader
 import Database.SQLite.Simple
 import Episode
 import EpisodeDatabaseCompat ()
+import SyncPlan
 import Text.RawString.QQ
 
 -- | Internal, opaque type to wrap the database `Connection`.
@@ -42,6 +44,15 @@ getNewEpisodes = do
         AND e.is_new
         AND e.download_filename LIKE '%.mp3'
     |]
+
+addSyncedEpisode :: ExistingEpisode -> DB ()
+addSyncedEpisode ExistingEpisode{eeId, eeFilename} = do
+  conn <- ask
+  liftIO $
+    executeNamed
+      conn
+      "INSERT INTO synced_episode (episodeId, filename) VALUES (:id, :filename)"
+      ["id" := eeId, "filename" := eeFilename]
 
 createSyncedEpisodeTable :: DB ()
 createSyncedEpisodeTable = do
