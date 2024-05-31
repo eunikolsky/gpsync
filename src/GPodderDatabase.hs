@@ -55,7 +55,7 @@ addSyncedEpisode ExistingEpisode{eeId, eeFilename} = do
     executeNamed
       conn
       "INSERT INTO synced_episode (episodeId, filename) VALUES (:id, :filename)"
-      ["id" := eeId, "filename" := eeFilename]
+      [":id" := eeId, ":filename" := eeFilename]
 
 removeSyncedEpisode :: ExistingEpisode -> DB ()
 removeSyncedEpisode ExistingEpisode{eeId} = do
@@ -64,7 +64,7 @@ removeSyncedEpisode ExistingEpisode{eeId} = do
     executeNamed
       conn
       "DELETE FROM synced_episode WHERE episodeId = :id"
-      ["id" := eeId]
+      [":id" := eeId]
 
 getSyncedEpisodes :: DB [ExistingEpisode]
 getSyncedEpisodes = do
