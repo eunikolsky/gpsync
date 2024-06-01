@@ -15,12 +15,31 @@ import GPodderDatabase
 import SyncPlan (getSyncPlan)
 import SyncPlanExec (SyncResult (..), executeSyncPlan)
 import System.Directory (getHomeDirectory)
-import System.Environment (lookupEnv)
-import System.Exit (die)
+import System.Environment (getArgs, getProgName, lookupEnv)
+import System.Exit (die, exitSuccess)
 import System.FilePath ((</>))
 
+newtype ProgArgs = ProgArgs {isDryRun :: Bool}
+
 main :: IO ()
-main = getConfig >>= sync
+main = do
+  args <- getProgArgs
+  getConfig >>= sync args
+
+getProgArgs :: IO ProgArgs
+getProgArgs = do
+  args <- getArgs
+  case args of
+    ["-n"] -> pure ProgArgs{isDryRun = True}
+    ["-h"] -> showHelp
+    [] -> pure ProgArgs{isDryRun = False}
+    xs -> die $ "unrecognized arguments " <> show xs
+
+showHelp :: IO a
+showHelp = do
+  name <- getProgName
+  putStrLn $ mconcat [name, " [-n|-h]"]
+  exitSuccess
 
 getConfig :: IO Config
 getConfig = do
@@ -37,13 +56,17 @@ getConfig = do
       , cfgGPodderDir
       }
 
-sync :: Config -> IO ()
-sync cfg@Config{cfgGPodderDir} = withDatabase (cfgGPodderDir </> "Database") $ do
-  episodes <- getNewEpisodes
-  existingEpisodes <- getSyncedEpisodes
-  let actions = getSyncPlan episodes existingEpisodes
-  results <- liftIO $ executeSyncPlan cfg actions
-  mapM_ saveResult results
+sync :: ProgArgs -> Config -> IO ()
+sync ProgArgs{isDryRun} cfg@Config{cfgGPodderDir} =
+  withDatabase (cfgGPodderDir </> "Database") $ do
+    episodes <- getNewEpisodes
+    existingEpisodes <- getSyncedEpisodes
+    let actions = getSyncPlan episodes existingEpisodes
+    if isDryRun
+      then liftIO . putStrLn $ mconcat ["sync plan: ", show actions]
+      else do
+        results <- liftIO $ executeSyncPlan cfg actions
+        mapM_ saveResult results
 
 saveResult :: SyncResult -> DB ()
 saveResult (Deleted e) = removeSyncedEpisode e
