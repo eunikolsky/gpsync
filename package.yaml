@@ -72,6 +72,7 @@ library:
     - sqlite-simple
     - text
     - time
+    - unicode-show
 
 executables:
   gpsync:

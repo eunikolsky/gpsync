@@ -63,6 +63,7 @@ library
     , sqlite-simple
     , text
     , time
+    , unicode-show
   default-language: Haskell2010
 
 executable gpsync

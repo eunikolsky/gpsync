@@ -5,6 +5,7 @@ import Data.Text qualified as T
 import Data.Time
 import GHC.Generics
 import System.FilePath
+import Text.Show.Unicode
 
 type EpisodeId = Int
 
@@ -20,7 +21,23 @@ data Episode = Episode
   , epFilename :: !FilePath
   -- ^ path to file relative to gPodder's downloads dir
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Eq, Ord, Generic)
+
+instance Show Episode where
+  show Episode{epId, epPodcastTitle, epEpisodeTitle, epFilename, epPublishedAt} =
+    mconcat
+      [ "Episode #"
+      , show epId
+      , " {podcast "
+      , ushow epPodcastTitle
+      , ", episode "
+      , ushow epEpisodeTitle
+      , ", filename "
+      , ushow epFilename
+      , ", published at "
+      , show epPublishedAt
+      , "}"
+      ]
 
 type TargetFilePath = FilePath
 

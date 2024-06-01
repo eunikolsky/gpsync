@@ -5,6 +5,7 @@ import Data.Set (Set)
 import Data.Set qualified as S
 import Episode
 import GHC.Generics
+import Text.Show.Unicode
 
 {- | Episodes that were previously synced. They are read from/written to the new
 `synced_episode` table created by this program. The program assumes that this
@@ -17,7 +18,17 @@ data ExistingEpisode = ExistingEpisode
     -- work by ordering the filename before the id
     eeId :: !EpisodeId
   }
-  deriving stock (Show, Eq, Ord, Generic)
+  deriving stock (Eq, Ord, Generic)
+
+instance Show ExistingEpisode where
+  show ExistingEpisode{eeId, eeFilename} =
+    mconcat
+      [ "ExistingEpisode #"
+      , show eeId
+      , " {filename "
+      , ushow eeFilename
+      , "}"
+      ]
 
 data SyncAction = Delete !ExistingEpisode | Copy !Episode
   deriving stock (Show, Eq, Ord)
