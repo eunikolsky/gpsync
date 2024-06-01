@@ -1,6 +1,8 @@
 module SyncPlanExec (SyncResult (..), executeSyncPlan) where
 
 import Config
+import Control.Monad
+import Data.Functor
 import Data.Set (Set)
 import Data.Set qualified as S
 import Episode
@@ -18,6 +20,7 @@ execAction Config{cfgSyncTargetDir} (Delete e) = do
   let file = cfgSyncTargetDir </> eeFilename e
   putStrLn $ "removing " <> file
   removeFile file
+  removeDirectoryIfEmpty $ takeDirectory file
   pure $ Deleted e
 execAction Config{cfgSyncTargetDir, cfgDownloadsDir} (Copy e) = do
   let targetFilename = targetFilePath e
@@ -35,3 +38,12 @@ ensureDir = createDirectoryIfMissing createParents
     -- we expect to create only the podcast directory if necessary; the sync
     -- target directory should already be present
     createParents = False
+
+removeDirectoryIfEmpty :: FilePath -> IO ()
+removeDirectoryIfEmpty dir =
+  whenM (listDirectory dir <&> null) $ removeDirectory dir
+
+whenM :: (Monad m) => m Bool -> m () -> m ()
+whenM mp mx = do
+  p <- mp
+  when p mx
