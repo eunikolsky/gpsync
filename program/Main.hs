@@ -63,7 +63,7 @@ sync ProgArgs{isDryRun} cfg@Config{cfgGPodderDir} =
     existingEpisodes <- getSyncedEpisodes
     let actions = getSyncPlan episodes existingEpisodes
     if isDryRun
-      then liftIO . putStrLn $ mconcat ["sync plan: ", show actions]
+      then liftIO $ mapM_ print actions
       else do
         results <- liftIO $ executeSyncPlan cfg actions
         mapM_ saveResult results
