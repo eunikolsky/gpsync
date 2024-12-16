@@ -13,7 +13,19 @@ spec = do
 
     it "sanitizes slash in titles" $
       let episode = mkEpisode "my favorite /" "/root/"
-      in targetFilePath episode `shouldBe` "my favorite _/_root_.mp3"
+      in targetFilePath episode `shouldBe` "my favorite ∕/∕root∕.mp3"
+
+    it "sanitizes colon in titles" $
+      let episode = mkEpisode "my favorite :" ":root:"
+      in targetFilePath episode `shouldBe` "my favorite ﹕/﹕root﹕.mp3"
+
+    it "sanitizes quote in titles" $
+      let episode = mkEpisode "my favorite \"" "\"root\""
+      in targetFilePath episode `shouldBe` "my favorite ＂/＂root＂.mp3"
+
+    it "sanitizes question mark in titles" $
+      let episode = mkEpisode "my favorite ?" "?root?"
+      in targetFilePath episode `shouldBe` "my favorite ﹖/﹖root﹖.mp3"
 
     it "keeps the trailing period" $
       let episode = mkEpisode "podcast." "episode."

@@ -65,9 +65,14 @@ library:
   dependencies:
     - aeson
     - containers
+    - directory
     - filepath
+    - mtl
+    - raw-strings-qq
+    - sqlite-simple
     - text
     - time
+    - unicode-show
 
 executables:
   gpsync:
@@ -78,6 +83,9 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - aeson
+    - directory
+    - filepath
     - gpsync
 
 tests:
