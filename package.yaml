@@ -62,6 +62,17 @@ default-extensions:
 
 library:
   source-dirs: src
+  dependencies:
+    - aeson
+    - containers
+    - directory
+    - filepath
+    - mtl
+    - raw-strings-qq
+    - sqlite-simple
+    - text
+    - time
+    - unicode-show
 
 executables:
   gpsync:
@@ -72,6 +83,9 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - aeson
+    - directory
+    - filepath
     - gpsync
 
 tests:
@@ -83,5 +97,9 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - aeson
+    - containers
     - gpsync
     - hspec
+    - raw-strings-qq
+    - text
