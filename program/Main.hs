@@ -5,14 +5,17 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Aeson (eitherDecodeFileStrict)
 import GPodderConfig (GPodderConfig (..))
 import GPodderDatabase
-  ( DB
-  , addSyncedEpisode
-  , getNewEpisodes
-  , getSyncedEpisodes
-  , removeSyncedEpisode
+  ( getNewEpisodes
   , withDatabase
   )
-import SyncPlan (getSyncPlan)
+import SyncPlan
+  ( ExistingEpisodeStore
+  , addSyncedEpisode
+  , getSyncPlan
+  , getSyncedEpisodes
+  , removeSyncedEpisode
+  , withExistingEpisodeStore
+  )
 import SyncPlanExec (SyncResult (..), executeSyncPlan)
 import System.Directory (getHomeDirectory)
 import System.Environment (getArgs, getProgName, lookupEnv)
@@ -57,9 +60,9 @@ getConfig = do
       }
 
 sync :: ProgArgs -> Config -> IO ()
-sync ProgArgs{isDryRun} cfg@Config{cfgGPodderDir} =
-  withDatabase (cfgGPodderDir </> "Database") $ do
-    episodes <- getNewEpisodes
+sync ProgArgs{isDryRun} cfg@Config{cfgGPodderDir} = do
+  episodes <- withDatabase (cfgGPodderDir </> "Database") getNewEpisodes
+  withExistingEpisodeStore (cfgGPodderDir </> "gpsync.csv") $ do
     existingEpisodes <- getSyncedEpisodes
     let actions = getSyncPlan episodes existingEpisodes
     if isDryRun
@@ -68,6 +71,6 @@ sync ProgArgs{isDryRun} cfg@Config{cfgGPodderDir} =
         results <- liftIO $ executeSyncPlan cfg actions
         mapM_ saveResult results
 
-saveResult :: SyncResult -> DB ()
+saveResult :: SyncResult -> ExistingEpisodeStore ()
 saveResult (Deleted e) = removeSyncedEpisode e
 saveResult (Copied e) = addSyncedEpisode e

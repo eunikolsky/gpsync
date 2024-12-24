@@ -55,6 +55,8 @@ library
   build-depends:
       aeson
     , base >=4.7 && <5
+    , bytestring
+    , cassava
     , containers
     , directory
     , filepath
@@ -64,6 +66,7 @@ library
     , text
     , time
     , unicode-show
+    , vector
   default-language: Haskell2010
 
 executable gpsync
