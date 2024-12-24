@@ -75,6 +75,7 @@ library:
     - text
     - time
     - unicode-show
+    - unliftio
     - vector
 
 executables:

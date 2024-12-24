@@ -9,8 +9,7 @@ module SyncPlan
   , withExistingEpisodeStore
   ) where
 
-import Control.Exception
-import Control.Monad.State.Strict
+import Control.Monad.Reader
 import Data.ByteString.Lazy qualified as LBS
 import Data.Csv qualified as C
 import Data.Map qualified as M
@@ -21,6 +20,8 @@ import Episode
 import GHC.Generics
 import System.Directory
 import Text.Show.Unicode
+import UnliftIO.Exception
+import UnliftIO.IORef
 
 {- | Episodes that were previously synced. They are read from/written to the
 `gpsync.csv` file in the gPodder's directory. The program assumes that this
@@ -60,21 +61,29 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
     newM = M.fromList $ (\e -> (epId e, e)) <$> newEpisodes
     existingM = M.fromList $ (\e -> (eeId e, e)) <$> existingEpisodes
 
-type ExistingEpisodeStore = StateT [ExistingEpisode] IO
+data State = State {sFilepath :: !FilePath, sEpisodes :: !(IORef [ExistingEpisode])}
+
+-- note: conceptualy, it should be a `StateT State IO`, but I have to use the
+-- `ReaderT` so that it works with `unliftio`'s `bracket_`; standard `bracket`
+-- only works with `IO` actions :(
+type ExistingEpisodeStore = ReaderT State IO
 
 withExistingEpisodeStore :: FilePath -> ExistingEpisodeStore a -> IO a
-withExistingEpisodeStore fp f =
-  bracket
-    -- note: I had to make `readEpisodes` and `writeEpisodes` work in `IO` instead
-    -- of `ExistingEpisodeStore` to satisfy `bracket`'s types; an alternative only
-    -- seems to be `unliftio`'s `bracket`, but then I'd need to replace the
-    -- `StateT x IO` with a `ReaderT (IORef x) IO`
-    (readEpisodes fp)
-    (writeEpisodes fp)
-    (evalStateT f)
+withExistingEpisodeStore fp f = do
+  episodesRef <- newIORef mempty
+  let initState = State{sFilepath = fp, sEpisodes = episodesRef}
+  flip runReaderT initState $ bracket_ readEpisodes writeEpisodes f
 
 getSyncedEpisodes :: ExistingEpisodeStore [ExistingEpisode]
-getSyncedEpisodes = get
+getSyncedEpisodes = readIORef =<< asks sEpisodes
+
+modify' :: ([ExistingEpisode] -> [ExistingEpisode]) -> ExistingEpisodeStore ()
+modify' f = do
+  ref <- asks sEpisodes
+  atomicModifyIORef' ref $ \episodes -> (f episodes, ())
+
+put :: [ExistingEpisode] -> ExistingEpisodeStore ()
+put = modify' . const
 
 addSyncedEpisode :: ExistingEpisode -> ExistingEpisodeStore ()
 addSyncedEpisode episode = modify' replace
@@ -87,16 +96,25 @@ removeSyncedEpisode episode = modify' $ without episode
 without :: ExistingEpisode -> [ExistingEpisode] -> [ExistingEpisode]
 without episode = filter (\e -> eeId e /= eeId episode)
 
-readEpisodes :: FilePath -> IO [ExistingEpisode]
-readEpisodes fp = do
-  fpExists <- doesFileExist fp
-  if fpExists
-    then do
-      Right vector <- C.decode C.NoHeader <$> LBS.readFile fp
-      pure $ V.toList vector
-    else pure mempty
+readEpisodes :: ExistingEpisodeStore ()
+readEpisodes = do
+  fp <- asks sFilepath
+  ifM
+    (liftIO $ doesFileExist fp)
+    ( do
+        Right vector <- C.decode C.NoHeader <$> liftIO (LBS.readFile fp)
+        put $ V.toList vector
+    )
+    $ pure ()
 
-writeEpisodes :: FilePath -> [ExistingEpisode] -> IO ()
-writeEpisodes fp episodes = do
+writeEpisodes :: ExistingEpisodeStore ()
+writeEpisodes = do
+  fp <- asks sFilepath
+  episodes <- getSyncedEpisodes
   let encoded = C.encode episodes
-  LBS.writeFile fp encoded
+  liftIO $ LBS.writeFile fp encoded
+
+ifM :: (Monad m) => m Bool -> m a -> m a -> m a
+ifM mpred mtrue mfalse = do
+  p <- mpred
+  if p then mtrue else mfalse
