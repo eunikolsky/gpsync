@@ -62,7 +62,7 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
 
 type ExistingEpisodeStore = StateT [ExistingEpisode] IO
 
-withExistingEpisodeStore :: FilePath -> ExistingEpisodeStore () -> IO ()
+withExistingEpisodeStore :: FilePath -> ExistingEpisodeStore a -> IO a
 withExistingEpisodeStore fp f =
   bracket
     -- note: I had to make `readEpisodes` and `writeEpisodes` work in `IO` instead
