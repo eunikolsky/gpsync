@@ -73,11 +73,7 @@ getSyncedEpisodes :: ExistingEpisodeStore [ExistingEpisode]
 getSyncedEpisodes = get
 
 addSyncedEpisode :: ExistingEpisode -> ExistingEpisodeStore ()
-addSyncedEpisode episode = do
-  modify' replace
-  -- saving the episodes to disk after every addition because copying is slow
-  -- and more likely to encounter errors than a removal
-  writeEpisodes
+addSyncedEpisode episode = modify' replace
   where
     replace episodes = episode : without episode episodes
 
