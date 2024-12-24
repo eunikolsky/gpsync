@@ -21,8 +21,8 @@ withDatabase :: FilePath -> DB a -> IO a
 withDatabase file = withConnection file . runReaderT
 
 {- | Returns all not-listened-to, downloaded episodes from the gPodder database.
-Only @.mp3@ files are returned. The filenames are relative to gPodder's download
-directory (they look like `podcast/episode.mp3`).
+Only @.mp3@ and @.m4a@ files are returned. The filenames are relative to
+gPodder's download directory (they look like `podcast/episode.mp3`).
 -}
 getNewEpisodes :: DB [Episode]
 getNewEpisodes = do
@@ -40,5 +40,5 @@ getNewEpisodes = do
       JOIN podcast p ON e.podcast_id = p.id
       WHERE e.state = 1
         AND e.is_new
-        AND e.download_filename LIKE '%.mp3'
+        AND (e.download_filename LIKE '%.mp3' OR e.download_filename LIKE '%.m4a')
     |]
