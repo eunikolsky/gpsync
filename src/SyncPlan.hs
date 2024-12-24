@@ -9,7 +9,7 @@ module SyncPlan
   , withExistingEpisodeStore
   ) where
 
-import Control.Monad.Reader
+import Control.Exception
 import Control.Monad.State.Strict
 import Data.ByteString.Lazy qualified as LBS
 import Data.Csv qualified as C
@@ -60,14 +60,18 @@ getSyncPlan newEpisodes existingEpisodes = toCopy <> toDelete
     newM = M.fromList $ (\e -> (epId e, e)) <$> newEpisodes
     existingM = M.fromList $ (\e -> (eeId e, e)) <$> existingEpisodes
 
-type ExistingEpisodeStore = ReaderT FilePath (StateT [ExistingEpisode] IO)
+type ExistingEpisodeStore = StateT [ExistingEpisode] IO
 
 withExistingEpisodeStore :: FilePath -> ExistingEpisodeStore () -> IO ()
--- FIXME `bracket`? it requires `IO` actions, which aren't the types here…
-withExistingEpisodeStore fp f = flip evalStateT mempty . flip runReaderT fp $ do
-  readEpisodes
-  f
-  writeEpisodes
+withExistingEpisodeStore fp f =
+  bracket
+    -- note: I had to make `readEpisodes` and `writeEpisodes` work in `IO` instead
+    -- of `ExistingEpisodeStore` to satisfy `bracket`'s types; an alternative only
+    -- seems to be `unliftio`'s `bracket`, but then I'd need to replace the
+    -- `StateT x IO` with a `ReaderT (IORef x) IO`
+    (readEpisodes fp)
+    (writeEpisodes fp)
+    (evalStateT f)
 
 getSyncedEpisodes :: ExistingEpisodeStore [ExistingEpisode]
 getSyncedEpisodes = get
@@ -83,24 +87,16 @@ removeSyncedEpisode episode = modify' $ without episode
 without :: ExistingEpisode -> [ExistingEpisode] -> [ExistingEpisode]
 without episode = filter (\e -> eeId e /= eeId episode)
 
-readEpisodes :: ExistingEpisodeStore ()
-readEpisodes = do
-  fp <- ask
-  ifM
-    (liftIO $ doesFileExist fp)
-    ( do
-        Right vector <- C.decode C.NoHeader <$> liftIO (LBS.readFile fp)
-        put $ V.toList vector
-    )
-    $ pure ()
+readEpisodes :: FilePath -> IO [ExistingEpisode]
+readEpisodes fp = do
+  fpExists <- doesFileExist fp
+  if fpExists
+    then do
+      Right vector <- C.decode C.NoHeader <$> LBS.readFile fp
+      pure $ V.toList vector
+    else pure mempty
 
-writeEpisodes :: ExistingEpisodeStore ()
-writeEpisodes = do
-  fp <- ask
-  encoded <- gets C.encode
-  liftIO $ LBS.writeFile fp encoded
-
-ifM :: (Monad m) => m Bool -> m a -> m a -> m a
-ifM mpred mtrue mfalse = do
-  p <- mpred
-  if p then mtrue else mfalse
+writeEpisodes :: FilePath -> [ExistingEpisode] -> IO ()
+writeEpisodes fp episodes = do
+  let encoded = C.encode episodes
+  LBS.writeFile fp encoded
