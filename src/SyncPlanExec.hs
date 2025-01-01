@@ -18,9 +18,16 @@ executeSyncPlan config = mapM (execAction config) . S.toAscList
 execAction :: Config -> SyncAction -> IO SyncResult
 execAction Config{cfgSyncTargetDir} (Delete e) = do
   let file = cfgSyncTargetDir </> eeFilename e
-  putStrLn $ "removing " <> file
-  removeFile file
-  removeDirectoryIfEmpty $ takeDirectory file
+  putStr $ "removing " <> file
+  fileExists <- doesFileExist file
+  if fileExists
+    then removeFile file
+    else putStr " (file not found!)"
+  putStrLn ""
+
+  let dir = takeDirectory file
+  whenM (doesDirectoryExist dir) $ removeDirectoryIfEmpty dir
+
   pure $ Deleted e
 execAction Config{cfgSyncTargetDir, cfgDownloadsDir} (Copy e) = do
   let targetFilename = targetFilePath e

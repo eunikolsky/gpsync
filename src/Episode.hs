@@ -42,8 +42,8 @@ instance Show Episode where
 type TargetFilePath = FilePath
 
 targetFilePath :: Episode -> TargetFilePath
-targetFilePath Episode{epPodcastTitle, epEpisodeTitle} =
-  process epPodcastTitle </> process epEpisodeTitle <.> "mp3"
+targetFilePath Episode{epPodcastTitle, epEpisodeTitle, epFilename} =
+  process epPodcastTitle </> process epEpisodeTitle <.> takeExtension epFilename
   where
     process = T.unpack . sanitize
     -- TODO may need to sanitize other characters too

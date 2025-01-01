@@ -64,6 +64,8 @@ library:
   source-dirs: src
   dependencies:
     - aeson
+    - bytestring
+    - cassava
     - containers
     - directory
     - filepath
@@ -73,6 +75,8 @@ library:
     - text
     - time
     - unicode-show
+    - unliftio
+    - vector
 
 executables:
   gpsync:
