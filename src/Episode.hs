@@ -1,7 +1,10 @@
 module Episode (Episode (..), EpisodeId, TargetFilePath, targetFilePath) where
 
+import Data.ByteString (ByteString)
+import Data.ByteString qualified as BS
 import Data.Text (Text)
 import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
 import Data.Time
 import GHC.Generics
 import System.FilePath
@@ -43,10 +46,25 @@ type TargetFilePath = FilePath
 
 targetFilePath :: Episode -> TargetFilePath
 targetFilePath Episode{epPodcastTitle, epEpisodeTitle, epFilename} =
-  process epPodcastTitle </> process epEpisodeTitle <.> takeExtension epFilename
+  truncateFilename extension (process epPodcastTitle </> process epEpisodeTitle) <.> extension
   where
+    extension = takeExtension epFilename
     process = T.unpack . sanitize
     -- TODO may need to sanitize other characters too
     -- https://github.com/gpodder/gpodder/blob/master/src/gpodder/util.py#L1658
     sanitize =
       T.replace "/" "∕" . T.replace ":" "᠄" . T.replace "\"" "❛" . T.replace "?" "⸮" . T.replace "|" "❘"
+
+truncateFilename :: String -> FilePath -> FilePath
+truncateFilename ext = withBytesView $ BS.take (255 - length ext)
+
+{- | Applies function `f` to the bytes representation of the `FilePath`, making
+sure that the result is still a valid UTF-8 string.
+-}
+withBytesView :: (ByteString -> ByteString) -> FilePath -> FilePath
+withBytesView f = T.unpack . go . f . TE.encodeUtf8 . T.pack
+  where
+    go bs = case TE.decodeUtf8' bs of
+      Right t -> t
+      -- if decoding to utf-8 failed, we need to remove the last byte and try again
+      Left _ -> go $ BS.init bs
