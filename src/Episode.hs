@@ -56,7 +56,7 @@ targetFilePath Episode{epPodcastTitle, epEpisodeTitle, epFilename} =
       T.replace "/" "∕" . T.replace ":" "᠄" . T.replace "\"" "❛" . T.replace "?" "⸮" . T.replace "|" "❘"
 
 truncateFilename :: String -> FilePath -> FilePath
-truncateFilename ext = withBytesView $ BS.take (255 - length ext)
+truncateFilename ext = withBytesView $ BS.take (240 - length ext)
 
 {- | Applies function `f` to the bytes representation of the `FilePath`, making
 sure that the result is still a valid UTF-8 string.

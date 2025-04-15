@@ -37,16 +37,16 @@ spec = do
       let episode = mkEpisode "podcast." "episode."
       in targetFilePath episode `shouldBe` "podcast./episode..mp3"
 
-    it "truncates the filename up to 255 bytes" $
+    it "truncates the filename up to 240 bytes" $
       let episode =
             mkEpisode
               "Пиратский Канадский Лось и компания"
               "2025-01-01 23᠄16᠄25 +0200 ∕ 888 - “Не ищите ошибки в логах, разговаривая с пультом и попивая кефир в своем квартале”"
       in targetFilePath episode
-           `shouldBe` "Пиратский Канадский Лось и компания/2025-01-01 23᠄16᠄25 +0200 ∕ 888 - “Не ищите ошибки в логах, разговаривая с пультом и попивая кефир в своем кварт.mp3"
+           `shouldBe` "Пиратский Канадский Лось и компания/2025-01-01 23᠄16᠄25 +0200 ∕ 888 - “Не ищите ошибки в логах, разговаривая с пультом и попивая кефир в сво.mp3"
 
     forM_ [0 .. 16] $ \sub -> do
-      let fnameLength = 260 - sub
+      let fnameLength = 248 - sub
       it ("truncates the filename at the utf-8 char boundary (#" <> show sub <> ")") $
         let episode = mkEpisode "a" filename
             threeByteChar = "“"
