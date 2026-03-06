@@ -53,7 +53,12 @@ targetFilePath Episode{epPodcastTitle, epEpisodeTitle, epFilename} =
     -- TODO may need to sanitize other characters too
     -- https://github.com/gpodder/gpodder/blob/master/src/gpodder/util.py#L1658
     sanitize =
-      T.replace "/" "∕" . T.replace ":" "᠄" . T.replace "\"" "❛" . T.replace "?" "⸮" . T.replace "|" "❘"
+      T.replace "/" "∕"
+        . T.replace ":" "᠄"
+        . T.replace "\"" "❛"
+        . T.replace "?" "⸮"
+        . T.replace "|" "❘"
+        . T.replace "*" "∗"
 
 truncateFilename :: String -> FilePath -> FilePath
 truncateFilename ext = withBytesView $ BS.take (240 - length ext)
