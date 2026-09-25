@@ -108,24 +108,7 @@ spec = do
           expected = sortOn eeFilename episodes
       in sort (Delete <$> episodes) `shouldBe` (Delete <$> expected)
 
-    it "orders `Copy`s by podcast title first" $
-      let mkEpisode epId epPodcastTitle epPublishedAt =
-            Episode
-              { epId
-              , epPodcastTitle
-              , epPublishedAt
-              , epEpisodeTitle = ""
-              , epFilename = ""
-              }
-          episodes =
-            [ mkEpisode 1 "zero" $ read "2024-01-31 20:00:00"
-            , mkEpisode 5 "abc" $ read "2024-12-31 10:00:00"
-            , mkEpisode 9 "foo" $ read "2024-01-31 22:40:00"
-            ]
-          expected = sortOn epPodcastTitle episodes
-      in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)
-
-    it "orders `Copy`s by publication time second" $
+    it "orders `Copy`s by publication time first" $
       let mkEpisode epId epPodcastTitle epPublishedAt =
             Episode
               { epId
@@ -139,5 +122,22 @@ spec = do
             , mkEpisode 5 "foo" $ read "2024-01-31 22:00:00"
             , mkEpisode 9 "foo" $ read "2024-01-31 10:40:00"
             ]
-          expected = sortBy (comparing epPodcastTitle <> comparing epPublishedAt) episodes
+          expected = sortOn epPublishedAt episodes
+      in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)
+
+    it "orders `Copy`s by podcast title second" $
+      let mkEpisode epId epPodcastTitle epPublishedAt =
+            Episode
+              { epId
+              , epPodcastTitle
+              , epPublishedAt
+              , epEpisodeTitle = ""
+              , epFilename = ""
+              }
+          episodes =
+            [ mkEpisode 1 "zero" $ read "2024-01-31 20:00:00"
+            , mkEpisode 5 "abc" $ read "2024-12-31 10:00:00"
+            , mkEpisode 9 "foo" $ read "2024-01-31 22:40:00"
+            ]
+          expected = sortBy (comparing epPublishedAt <> comparing epPodcastTitle) episodes
       in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)

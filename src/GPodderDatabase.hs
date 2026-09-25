@@ -31,8 +31,8 @@ getNewEpisodes = do
     query_
       conn
       [r|
-      SELECT p.title
-        , e.published
+      SELECT e.published
+        , p.title
         , e.id
         , e.title
         , p.download_folder || '/' || e.download_filename
