@@ -1,6 +1,7 @@
 module SyncPlanSpec (spec) where
 
-import Data.List (sort, sortOn)
+import Data.List (sort, sortBy, sortOn)
+import Data.Ord (comparing)
 import Data.Set qualified as S
 import Episode
 import SyncPlan
@@ -107,36 +108,36 @@ spec = do
           expected = sortOn eeFilename episodes
       in sort (Delete <$> episodes) `shouldBe` (Delete <$> expected)
 
-    it "orders `Copy`s by podcast title first" $
-      let mkEpisode epId epPodcastTitle =
-            Episode
-              { epId
-              , epPodcastTitle
-              , epEpisodeTitle = ""
-              , epFilename = ""
-              , epPublishedAt = read "2024-01-01 00:00:00"
-              }
-          episodes =
-            [ mkEpisode 1 "zero"
-            , mkEpisode 5 "abc"
-            , mkEpisode 9 "foo"
-            ]
-          expected = sortOn epPodcastTitle episodes
-      in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)
-
-    it "orders `Copy`s by publication time second" $
-      let mkEpisode epId epPublishedAt =
+    it "orders `Copy`s by publication time first" $
+      let mkEpisode epId epPodcastTitle epPublishedAt =
             Episode
               { epId
               , epPublishedAt
-              , epPodcastTitle = "abc"
+              , epPodcastTitle
               , epEpisodeTitle = ""
               , epFilename = ""
               }
           episodes =
-            [ mkEpisode 1 $ read "2024-12-31 20:00:00"
-            , mkEpisode 5 $ read "2024-01-31 10:00:00"
-            , mkEpisode 9 $ read "2024-01-31 22:40:00"
+            [ mkEpisode 1 "abc" $ read "2024-12-31 20:00:00"
+            , mkEpisode 5 "foo" $ read "2024-01-31 22:00:00"
+            , mkEpisode 9 "foo" $ read "2024-01-31 10:40:00"
             ]
           expected = sortOn epPublishedAt episodes
+      in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)
+
+    it "orders `Copy`s by podcast title second" $
+      let mkEpisode epId epPodcastTitle epPublishedAt =
+            Episode
+              { epId
+              , epPodcastTitle
+              , epPublishedAt
+              , epEpisodeTitle = ""
+              , epFilename = ""
+              }
+          episodes =
+            [ mkEpisode 1 "zero" $ read "2024-01-31 20:00:00"
+            , mkEpisode 5 "abc" $ read "2024-12-31 10:00:00"
+            , mkEpisode 9 "foo" $ read "2024-01-31 22:40:00"
+            ]
+          expected = sortBy (comparing epPublishedAt <> comparing epPodcastTitle) episodes
       in sort (Copy <$> episodes) `shouldBe` (Copy <$> expected)
